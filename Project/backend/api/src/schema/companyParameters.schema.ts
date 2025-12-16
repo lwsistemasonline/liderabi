@@ -15,14 +15,3 @@ export interface CreateCompanyParametersData {
 export interface UpdateCompanyParametersData {
     parameters?: any;
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,10 +1,18 @@
 import { Request, Response } from "express";
-import { createUserLogs, findAllUserLogs, findUserLogsById, softDeleteUserLogs, updateUserLogs } from "../repository/userLogs.repository";
+import { createUserLogs, findUserLogsById, searchUserLogs, softDeleteUserLogs, updateUserLogs } from "../repository/userLogs.repository";
 import { UserLogsSchema, CreateUserLogsData, UpdateUserLogsData } from "../schema/userLogs.schema";
 import { StatusCodes } from "http-status-codes";
 import Logger from "../middleware/logger";
 
 const logger = new Logger();
+
+interface searchLog {
+    dateStart: string;
+    dateEnd: string;
+    ip_address: string;
+    userId: string;
+    companyId: string;
+}
 
 export async function create(req: Request, res: Response) {
     try {
@@ -26,13 +34,23 @@ export async function findById(req: Request, res: Response) {
     }
 }
 
-export async function findAll(_req: Request, res: Response) {
+export async function searchAll(req: Request, res: Response) {
     try {
-        const userLogs = await findAllUserLogs();
-        return res.status(StatusCodes.OK).json(userLogs as UserLogsSchema[]);
+        const { dateStart, dateEnd, ip_address, userId, companyId } = req.body as searchLog;
+
+        console.log(req.body);
+
+        const userLogs = await searchUserLogs(dateStart, dateEnd, ip_address, userId, companyId);
+
+        //if (userLogs.length === 0) {
+        //    return res.status(StatusCodes.NOT_FOUND).json({ message: 'No user logs found' });
+        //} else {
+            return res.status(StatusCodes.OK).json(userLogs as UserLogsSchema[]);
+        //}
+
     } catch (error) {
-        logger.error(`Error finding all user logs: ${error}`);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error finding all user logs' });
+        logger.error(`Error searching user logs: ${error}`);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error searching user logs' });
     }
 }
 
