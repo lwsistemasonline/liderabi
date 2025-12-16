@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, findById, findAll, update, softDelete } from "../controller/userLogs.controller";
+import { create, findById, searchAll, update, softDelete } from "../controller/userLogs.controller";
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.post('/', create);
 router.get('/:id', findById);
 
 // Find all user logs using /api/user-logs with GET
-router.get('/', findAll);
+router.post('/search/filter', searchAll);
 
 // Update a user logs by id using /api/user-logs/:id with PUT
 router.put('/:id', update);

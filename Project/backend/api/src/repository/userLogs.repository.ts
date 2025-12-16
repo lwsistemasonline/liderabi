@@ -40,15 +40,48 @@ export async function findUserLogsById(id: string): Promise<UserLogsSchema> {
     }
 }
 
-export async function findAllUserLogs(): Promise<UserLogsSchema[]> {
+export async function searchUserLogs(dateStart: string, dateEnd: string, ip_address: string, userId: string, companyId: string): Promise<UserLogsSchema[]> {
     try {
+        const whereClause: any = {
+            deletedAt: null,
+            datelog: {
+                gte: new Date(dateStart + ' 00:00:00'),
+                lte: new Date(dateEnd + ' 23:59:59')
+            }
+        };
+
+        if (ip_address && ip_address !== '') {
+            whereClause.ip_address = ip_address;
+        }
+
+        if (userId) {
+            // Ensure userId is a string, not an object
+            // If it's an object with an 'id' property, extract the id value
+            const userIdValue = typeof userId === 'string' ? userId : (userId as any)?.id;
+            if (userIdValue && userIdValue !== '') {
+                whereClause.userId = userIdValue;
+            }
+        }
+
+        if (companyId) {
+            // Ensure companyId is a string, not an object
+            // If it's an object with an 'id' property (like { id: "..." }), extract the id value
+            // Otherwise use it directly if it's already a string
+            const companyIdValue = typeof companyId === 'string' ? companyId : (companyId as any)?.id;
+            if (companyIdValue && companyIdValue !== '') {
+                whereClause.companyId = companyIdValue;
+            }
+        }
+        
         const userLogs = await prisma.userLogs.findMany({
-            where: { deletedAt: null },
+            where: whereClause,
         });
+
         return userLogs as unknown as UserLogsSchema[];
     } catch (error) {
-        logger.error(`Error finding all user logs: ${error}`);
-        throw new Error('Error finding all user logs');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        logger.error(`Error searching user logs: ${errorMessage}`);
+        throw new Error(errorMessage);
     }
 }
 
