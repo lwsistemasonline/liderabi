@@ -1,0 +1,130 @@
+// app global css in SCSS form
+
+// ============================================
+// CSS CUSTOM PROPERTIES (for use anywhere in the app)
+// ============================================
+:root {
+  // Primary Colors (Cyan/Teal Family)
+  --color-primary: #04BBD3;
+  --color-secondary: #0484A4;
+  --color-accent: #04849C;
+
+  // Navy Shades (Dark backgrounds)
+  --color-navy-darkest: #04081F;
+  --color-navy-dark: #091336;
+  --color-navy-medium: #19335F;
+  --color-navy-light: #1E3B6C;
+
+  // Gray Shades (Neutral colors)
+  --color-gray-light: #5D5D5F;
+  --color-gray-medium: #504F51;
+  --color-gray-dark: #424143;
+
+  // Semantic colors
+  --color-success: #21ba45;
+  --color-error: #c10015;
+  --color-warning: #f2c037;
+  --color-info: #04BBD3;
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Background colors
+.bg-navy-darkest { background-color: var(--color-navy-darkest) !important; }
+.bg-navy-dark { background-color: var(--color-navy-dark) !important; }
+.bg-navy-medium { background-color: var(--color-navy-medium) !important; }
+.bg-navy-light { background-color: var(--color-navy-light) !important; }
+.bg-gray-light { background-color: var(--color-gray-light) !important; }
+.bg-gray-medium { background-color: var(--color-gray-medium) !important; }
+.bg-gray-dark { background-color: var(--color-gray-dark) !important; }
+.bg-cyan { background-color: var(--color-primary) !important; }
+.bg-teal { background-color: var(--color-secondary) !important; }
+.bg-teal-dark { background-color: var(--color-accent) !important; }
+
+// Text colors
+.text-navy-darkest { color: var(--color-navy-darkest) !important; }
+.text-navy-dark { color: var(--color-navy-dark) !important; }
+.text-navy-medium { color: var(--color-navy-medium) !important; }
+.text-navy-light { color: var(--color-navy-light) !important; }
+.text-gray-light { color: var(--color-gray-light) !important; }
+.text-gray-medium { color: var(--color-gray-medium) !important; }
+.text-gray-dark { color: var(--color-gray-dark) !important; }
+.text-cyan { color: var(--color-primary) !important; }
+.text-teal { color: var(--color-secondary) !important; }
+.text-teal-dark { color: var(--color-accent) !important; }
+
+// Border colors
+.border-cyan { border-color: var(--color-primary) !important; }
+.border-teal { border-color: var(--color-secondary) !important; }
+.border-navy { border-color: var(--color-navy-dark) !important; }
+.border-gray { border-color: var(--color-gray-medium) !important; }
+
+// ============================================
+// GRADIENT UTILITIES
+// ============================================
+.gradient-navy {
+  background: linear-gradient(135deg, var(--color-navy-darkest) 0%, var(--color-navy-dark) 100%);
+}
+
+.gradient-cyan-teal {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+}
+
+.gradient-navy-light {
+  background: linear-gradient(135deg, var(--color-navy-dark) 0%, var(--color-navy-light) 100%);
+}
+
+// ============================================
+// DARK MODE STYLES
+// ============================================
+body.body--dark {
+  background-color: var(--color-navy-darkest);
+
+  .q-drawer {
+    background-color: var(--color-navy-dark);
+  }
+
+  .q-page-container {
+    background-color: var(--color-navy-darkest);
+  }
+
+  .q-card {
+    background-color: var(--color-navy-dark);
+  }
+
+  .q-item__label--header {
+    color: var(--color-primary);
+  }
+}
+
+// Light mode specific styles
+body.body--light {
+  .q-drawer {
+    background-color: #ffffff;
+  }
+
+  .q-page-container {
+    background-color: #f5f5f5;
+  }
+
+  .q-header {
+    background-color: var(--color-gray-light) !important; // #5D5D5F
+    
+    .q-toolbar {
+      color: white;
+    }
+  }
+}
+
+// Dark mode toolbar styling
+body.body--dark {
+  .q-header {
+    background-color: var(--color-navy-dark) !important; // #091336
+    
+    .q-toolbar {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
