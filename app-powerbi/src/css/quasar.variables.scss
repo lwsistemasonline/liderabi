@@ -1,0 +1,43 @@
+// Quasar SCSS (& Sass) Variables
+// --------------------------------------------------
+// Custom color palette for Lidera TI - Power BI App
+
+// ============================================
+// PRIMARY COLORS (Cyan/Teal Family)
+// ============================================
+$primary: #04BBD3;        // Bright cyan - main brand color
+$secondary: #0484A4;      // Darker teal - secondary actions
+$accent: #04849C;         // Teal variant - accents and highlights
+
+// ============================================
+// DARK THEME COLORS (Navy Family)
+// ============================================
+$dark: #091336;           // Dark navy - main dark background
+$dark-page: #04081F;      // Very dark navy - page background in dark mode
+
+// ============================================
+// SEMANTIC COLORS
+// ============================================
+$positive: #21ba45;       // Success states
+$negative: #c10015;       // Error states
+$info: #04BBD3;           // Info messages (using primary cyan)
+$warning: #f2c037;        // Warning states
+
+// ============================================
+// CUSTOM COLOR VARIABLES
+// ============================================
+// Navy shades
+$navy-dark: #04081F;
+$navy: #091336;
+$navy-medium: #19335F;
+$navy-light: #1E3B6C;
+
+// Gray shades
+$gray-dark: #424143;
+$gray-medium: #504F51;
+$gray-light: #5D5D5F;
+
+// Cyan/Teal shades
+$cyan-bright: #04BBD3;
+$teal: #0484A4;
+$teal-dark: #04849C;
