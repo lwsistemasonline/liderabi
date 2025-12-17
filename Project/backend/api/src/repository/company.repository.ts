@@ -39,6 +39,11 @@ export const findAllCompanies = async () => {
     try {
         return await prisma.company.findMany({
             where: { deletedAt: null },
+
+            include: {
+                companyGroup: true,
+                typeCompany: true,
+            },
         });
     } catch (error) {
         logger.error(`Error finding all companies: ${error}`);
