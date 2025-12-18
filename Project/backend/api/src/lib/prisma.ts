@@ -1,10 +1,12 @@
 import { PrismaClient } from '../../generated/prisma';
 import dotenv from 'dotenv';
+import { clientConfig } from '../../prisma.config';
 
 dotenv.config();
 
 const prismaClientSingleton = () => {
   return new PrismaClient({
+    ...clientConfig,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };

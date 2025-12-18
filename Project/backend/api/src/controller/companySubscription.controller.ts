@@ -1,6 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 import { CompanySubscriptionSchema } from "../schema/companySubscription.schema";
-import { createCompanySubscription, deleteCompanySubscription, findAllCompanySubscriptions, findCompanySubscriptionById, updateCompanySubscription } from "../repository/companySubscription.repository";
+import { createCompanySubscription, deleteCompanySubscription, findAllCompanySubscriptions, findCompanySubscriptionByCompanyId, findCompanySubscriptionById, updateCompanySubscription } from "../repository/companySubscription.repository";
 import { Request, Response } from "express";
 import Logger from "../middleware/logger";
 
@@ -28,6 +28,20 @@ export async function getById(req: Request, res: Response): Promise<Response | u
     } catch (error: any) {
         logger.error(`Error getting company subscription by id: ${error}`);
         const errorMessage = error?.message || 'Error getting company subscription by id';
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage, details: error?.meta || undefined });
+    }
+}
+
+export async function getByCompanyId(req: Request, res: Response): Promise<Response | undefined> {
+    try {
+        const companySubscription = await findCompanySubscriptionByCompanyId(req.params.companyId);
+        if (!companySubscription) {
+            return res.status(StatusCodes.NOT_FOUND).json({ error: 'Company subscription not found' });
+        }
+        return res.status(StatusCodes.OK).json(companySubscription as unknown as CompanySubscriptionSchema);
+    } catch (error: any) {
+        logger.error(`Error getting company subscription by company id: ${error}`);
+        const errorMessage = error?.message || 'Error getting company subscription by company id';
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessage, details: error?.meta || undefined });
     }
 }

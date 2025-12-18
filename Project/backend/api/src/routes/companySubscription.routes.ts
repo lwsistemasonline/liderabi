@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, getAll, getById, softDelete, update } from "../controller/companySubscription.controller";
+import { create, getAll, getById, getByCompanyId, softDelete, update } from "../controller/companySubscription.controller";
 
 const router = Router();
 
@@ -11,6 +11,9 @@ router.get('/', getAll);
 
 // Get a company subscription by id /api/company-subscriptions/:id
 router.get('/:id', getById);
+
+// Get a company subscription by company id /api/company-subscriptions/company/:companyId
+router.get('/company/:companyId', getByCompanyId);
 
 // Update a company subscription by id /api/company-subscriptions/:i
 router.put('/:id', update);

@@ -39,6 +39,17 @@ export const findCompanySubscriptionById = async (id: string) => {
     }
 }
 
+export const findCompanySubscriptionByCompanyId = async (companyId: string) => {
+    try {
+        return await prisma.company_Subscription.findFirst({
+            where: { companyId },
+        });
+    } catch (error) {
+        logger.error(`Error finding company subscription by company id: ${error}`);
+        throw new Error('Error finding company subscription by company id');
+    }
+}
+
 export const findAllCompanySubscriptions = async () => {
     try {
         return await prisma.company_Subscription.findMany({
