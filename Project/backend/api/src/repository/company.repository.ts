@@ -53,22 +53,34 @@ export const findAllCompanies = async () => {
 
 export const updateCompany = async (id: string, company: CompanySchema) => {
     try {
-        return await prisma.company.update({
+
+        console.log('company', company);
+        console.log('id', id);
+
+        const payload = {
+            name: company.name,
+            companyGroupId: company.companyGroupId,
+            parentCompanyId: company.parentCompanyId,
+            typeCompanyId: company.typeCompanyId,
+            contactData: company.contactData,
+            addressData: company.addressData,
+            credentialPowerBi: company.credentialPowerBi,
+        };
+
+        console.log('payload', payload);
+
+        const response = await prisma.company.update({
             where: { id },
-            data: {
-                name: company.name,
-                companyGroupId: company.companyGroupId,
-                parentCompanyId: company.parentCompanyId,
-                typeCompanyId: company.typeCompanyId,
-                contactData: company.contactData,
-                addressData: company.addressData,
-                credentialPowerBi: company.credentialPowerBi,
-            },
+            data: payload,
             include: {
                 companyGroup: true,
                 typeCompany: true,
             },
         });
+
+        console.log('response apos salvar update:', response);
+
+        return response;
     } catch (error) {
         logger.error(`Error updating company: ${error}`);
         throw new Error('Error updating company');

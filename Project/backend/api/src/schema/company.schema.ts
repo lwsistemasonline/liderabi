@@ -23,9 +23,9 @@ export const companySchema = z.object({
     companyGroup: typeof companyGroupSchema.type | null;
     parentCompanyId: string | null;
     typeCompanyId: string | null;
-    contactData: any | null;
-    addressData: any | null;
-    credentialPowerBi: any | null;
+    contact_data: any | null;
+    address_data: any | null;
+    credential_power_bi: any | null;
     createdAt: Date | null;
     updatedAt: Date | null;
     deletedAt: Date | null; 

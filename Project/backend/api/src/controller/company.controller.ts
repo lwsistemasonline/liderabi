@@ -7,7 +7,7 @@ export async function create(req: Request, res: Response): Promise<Response | un
     try {
         const company = req.body as CompanySchema;
         const newCompany = await createCompany(company);
-        return res.status(StatusCodes.CREATED).json(newCompany as CompanySchema);
+        return res.status(StatusCodes.CREATED).json(newCompany as unknown as CompanySchema);
     } catch (error: any) {
         console.error('Error creating company:', error);
         const errorMessage = error?.message || 'Error creating company';
@@ -24,7 +24,7 @@ export async function getById(req: Request, res: Response): Promise<Response | u
         if (!company) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Company not found' });
         }
-        return res.status(StatusCodes.OK).json(company as CompanySchema);
+        return res.status(StatusCodes.OK).json(company as unknown as CompanySchema);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error getting company by id' });
     }
@@ -33,7 +33,7 @@ export async function getById(req: Request, res: Response): Promise<Response | u
 export async function getAll(_req: Request, res: Response): Promise<Response | undefined> {
     try {
         const companies = await findAllCompanies();
-        return res.status(StatusCodes.OK).json(companies as CompanySchema[]);
+        return res.status(StatusCodes.OK).json(companies as unknown as CompanySchema[]);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Error getting all companies' });
     }
@@ -41,7 +41,12 @@ export async function getAll(_req: Request, res: Response): Promise<Response | u
 
 export async function update(req: Request, res: Response): Promise<Response | undefined> {
     try {
+
+        console.log('req.body', req.body);
+
         const company = await updateCompany(req.params.id, req.body as CompanySchema);
+        console.log('company - apos salvar update:', company);
+
         if (!company) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Company not found' });
         }
