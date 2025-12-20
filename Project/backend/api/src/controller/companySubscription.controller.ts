@@ -34,7 +34,9 @@ export async function getById(req: Request, res: Response): Promise<Response | u
 
 export async function getByCompanyId(req: Request, res: Response): Promise<Response | undefined> {
     try {
+        console.log(`Getting company subscription by company id: ${req.params.companyId}`);
         const companySubscription = await findCompanySubscriptionByCompanyId(req.params.companyId);
+        console.log(`Company subscription: ${companySubscription}`);
         if (!companySubscription) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: 'Company subscription not found' });
         }
