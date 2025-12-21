@@ -1,7 +1,6 @@
 import { Request, Response, Router } from 'express';
 import companyRoutes from './company.routes';
 import userRoutes from './user.routes';
-import userSubscriptionsRoutes from './userSubscriptions.routes';
 import authRoutes from './auth.routes';
 import levelRoutes from './level.routes';
 import companyGroupRoutes from './companyGroup.routes';
@@ -19,16 +18,21 @@ import rolesObjectsRoutes from './rolesObjects.routes';
 import companyParametersRoutes from './companyParameters.routes';
 import userRolesRoutes from './userRoles.routes';
 import userRolesObjectsRoutes from './userRolesObjects.routes';
+import reportRoutes from './report.routes';
+import reportWorkspaceRoutes from './reportWorkspace.routes';
+import reportUserCompanyRoutes from './reportUserCompany.routes';
 
 const router = Router();
 
 router.get('/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok', message: 'API is running' });
+  res.json({ 
+    status: 'ok', 
+    date: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }).replace(`, `,``), 
+    message: 'API is running' });
 });
 
 router.use('/companies', companyRoutes);
 router.use('/users', userRoutes);
-router.use('/users-subscriptions', userSubscriptionsRoutes);
 router.use('/auth', authRoutes);
 router.use('/levels', levelRoutes);
 router.use('/companies', companyRoutes);
@@ -47,6 +51,9 @@ router.use('/objects', objectsRoutes);
 router.use('/user-logs', userLogsRoutes);
 router.use('/user-roles', userRolesRoutes);
 router.use('/user-roles-objects', userRolesObjectsRoutes);
+router.use('/reports', reportRoutes);
+router.use('/report-workspaces', reportWorkspaceRoutes);
+router.use('/report-user-companies', reportUserCompanyRoutes);
 
 export default router;
 

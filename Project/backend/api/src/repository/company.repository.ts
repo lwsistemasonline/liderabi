@@ -67,8 +67,6 @@ export const updateCompany = async (id: string, company: CompanySchema) => {
             credentialPowerBi: company.credentialPowerBi,
         };
 
-        console.log('payload', payload);
-
         const response = await prisma.company.update({
             where: { id },
             data: payload,
@@ -77,8 +75,6 @@ export const updateCompany = async (id: string, company: CompanySchema) => {
                 typeCompany: true,
             },
         });
-
-        console.log('response apos salvar update:', response);
 
         return response;
     } catch (error) {

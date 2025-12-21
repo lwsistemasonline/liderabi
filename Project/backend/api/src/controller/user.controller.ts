@@ -2,21 +2,28 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ZodError, z } from 'zod';
 import { findAllUser, findUserById, createUser, updateUser, softDeleteUser } from '../repository/user.repository';
-import { userSchema } from '../schema/user.schema';
+import { UserSchema, userSchema, UserSearchSchema, userSearchSchema } from '../schema/user.schema';
 import Logger from '../middleware/logger';
 
 const logger = new Logger();
 
-export async function getAll(_req: Request, res: Response) {
+export async function getAll(req: Request, res: Response) {
     try {
-      const users = await findAllUser();
+      // Validate and sanitize input
+      const search = userSearchSchema.parse(req.body || {});
+      
+      const users = await findAllUser(search as UserSearchSchema);
+      
+      // Validate and sanitize output by removing sensitive fields
       const validatedUsers = z.array(userSchema).parse(users);
-      return res.status(StatusCodes.OK).json(validatedUsers);
+      const sanitizedUsers = validatedUsers.map(({ password, ...user }) => user);
+
+      return res.status(StatusCodes.OK).json(sanitizedUsers);
     } catch (error) {
       logger.error(`Error fetching users: ${error}`);
       if (error instanceof ZodError) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-          error: 'Data validation error', 
+        return res.status(StatusCodes.BAD_REQUEST).json({ 
+          error: 'Invalid search parameters', 
           details: error.issues 
         });
       }
@@ -26,20 +33,26 @@ export async function getAll(_req: Request, res: Response) {
 
 export async function get(req: Request, res: Response) {
     try {
+      // Validate and sanitize input
+      const idSchema = z.string().min(1, 'User ID is required');
       const { id } = req.params;
-      const user = await findUserById(id);
+      const validatedId = idSchema.parse(id);
+
+      const user = await findUserById(validatedId);
 
       if (!user) {
         return res.status(StatusCodes.NOT_FOUND).json({ error: 'User not found' });
       }
 
+      // Validate and sanitize output by removing sensitive fields
       const validatedUser = userSchema.parse(user);
-      return res.status(StatusCodes.OK).json(validatedUser);
+      const { password, ...sanitizedUser } = validatedUser;
+      return res.status(StatusCodes.OK).json(sanitizedUser);
     } catch (error) {
       logger.error(`Error fetching user: ${error}`);
       if (error instanceof ZodError) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-          error: 'Data validation error', 
+        return res.status(StatusCodes.BAD_REQUEST).json({ 
+          error: 'Invalid user ID', 
           details: error.issues 
         });
       }
@@ -49,22 +62,19 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
     try {
-      const { name, companyId, mobileNumber, telegramId, image } = req.body;
+      const user = req.body as UserSchema;
 
-      if (!name || !companyId) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'Name and companyId are required' });
+      const newUser = await createUser(user);
+
+      if (!newUser) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ error: 'User already exists' });
       }
 
-      const user = await createUser({
-        name,
-        companyId,
-        mobileNumber,
-        telegramId,
-        image,
-      });
+      // Validate and sanitize response by removing sensitive fields
+      const validatedUser = userSchema.parse(newUser);
+      const { password, ...sanitizedUser } = validatedUser;
+      return res.status(StatusCodes.CREATED).json(sanitizedUser);
 
-      const validatedUser = userSchema.parse(user);
-      return res.status(StatusCodes.CREATED).json(validatedUser);
     } catch (error) {
       logger.error(`Error creating user: ${error}`);
       if (error instanceof ZodError) {
@@ -80,15 +90,17 @@ export async function create(req: Request, res: Response) {
 export async function update(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { name, companyId, mobileNumber, telegramId, image } = req.body;
+      const { name, companyId, mobileNumber, telegramId, image, emailVerified, email } = req.body;
 
       const user = await updateUser(id, {
         name,
         companyId,
         mobileNumber,
         telegramId,
-        image,
-      });
+        image,  
+        emailVerified,
+        email
+      }) as UserSchema;
 
       const validatedUser = userSchema.parse(user);
       return res.json(validatedUser);

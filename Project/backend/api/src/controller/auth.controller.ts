@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { findUserSubscriptionsByEmail } from '../repository/usersSubscriptions.repository';
+import { findUserByEmail } from '../repository/user.repository';
 import { createSession, deleteSessionByToken } from '../repository/session.repository';
-import { userSubscriptionsSchema } from '../schema/userSubscriptions.schema';
+import { userSchema } from '../schema/user.schema';
 import Logger from '../middleware/logger';
 import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken'; 
 
 const logger = new Logger();
 
@@ -22,7 +22,7 @@ function hashPassword(password: string): string {
 }
 
 // Helper function to remove password from user subscription object
-function sanitizeUserSubscription(data: any): any {
+function sanitizeUser(data: any): any {
   if (!data) return data;
   const { password, ...sanitized } = data;
   return sanitized;
@@ -40,16 +40,16 @@ export async function authenticate(req: Request, res: Response) {
     }
 
     // Find user subscription by email
-    const userSubscription = await findUserSubscriptionsByEmail(email);
+    const user = await findUserByEmail(email);
 
-    if (!userSubscription) {
+    if (!user) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ 
         error: 'Invalid email or password' 
-      });
+      }); 
     }
 
     // Check if password exists
-    if (!userSubscription.password) {
+    if (!user.password) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ 
         error: 'Invalid email or password' 
       });
@@ -58,19 +58,16 @@ export async function authenticate(req: Request, res: Response) {
     // Hash the provided password
     const hashedPassword = hashPassword(password);
 
-    //console.log('hashedPassword', hashedPassword);
-    //console.log('userSubscription.password', userSubscription.password);
-
     // Compare passwords
-    if (hashedPassword !== userSubscription.password) {
+    if (hashedPassword !== user.password) {
       return res.status(StatusCodes.UNAUTHORIZED).json({ 
         error: 'Invalid email or password' 
       });
     }
 
     // Validate and sanitize the user subscription data
-    const validatedUserSubscription = userSubscriptionsSchema.parse(userSubscription);
-    const sanitizedUserSubscription = sanitizeUserSubscription(validatedUserSubscription);
+    const validatedUser = userSchema.parse(user);
+    const sanitizedUser = sanitizeUser(validatedUser);
 
     // Generate JWT token with 6-hour expiration
     const jwtSecret = process.env.JWT_SECRET || process.env.AUTH_SECRET;
@@ -82,10 +79,10 @@ export async function authenticate(req: Request, res: Response) {
     }
 
     const tokenPayload = {
-      userId: sanitizedUserSubscription.userId,
-      id: sanitizedUserSubscription.id,
-      email: sanitizedUserSubscription.email,
-      companyId: sanitizedUserSubscription.companyId,
+      userId: sanitizedUser.id,
+      id: sanitizedUser.id,
+      email: sanitizedUser.email,
+      companyId: sanitizedUser.companyId,
     };
 
     const token = jwt.sign(tokenPayload, jwtSecret, {
@@ -98,8 +95,8 @@ export async function authenticate(req: Request, res: Response) {
 
     // Register session in database
     try {
-      await createSession(token, sanitizedUserSubscription.userId, expiresAt);
-      logger.info(`Session registered for user: ${sanitizedUserSubscription.userId}`);
+      await createSession(token, sanitizedUser.id, expiresAt);
+      logger.info(`Session registered for user: ${sanitizedUser.id}`);
     } catch (sessionError) {
       logger.error(`Error creating session: ${sessionError}`);
       // Continue even if session creation fails - token is still valid
@@ -109,12 +106,12 @@ export async function authenticate(req: Request, res: Response) {
     return res.status(StatusCodes.OK).json({
       message: 'Authentication successful',
       token: token,
-      userSubscription: sanitizedUserSubscription
+      user: sanitizedUser
     });
   } catch (error) {
-    logger.error(`Error authenticating user subscription: ${error}`);
+    logger.error(`Error authenticating user: ${error}`);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-      error: 'Failed to authenticate user subscription' 
+      error: 'Failed to authenticate user' 
     });
   }
 }

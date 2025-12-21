@@ -4,7 +4,7 @@ import { getAll, get, create, update, softDelete } from '../controller/user.cont
 const router = Router();
 
 // GET /api/users - Get all users
-router.get('/', getAll);
+router.post('/search', getAll);
 
 // GET /api/users/:id - Get user by ID
 router.get('/:id', get);
